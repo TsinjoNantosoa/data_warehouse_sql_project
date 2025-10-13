@@ -1,3 +1,49 @@
+/*
+===============================================================================
+Procédure stockée : silver.load_silver
+===============================================================================
+Objectif :
+    Cette procédure stockée exécute le processus ETL (Extraction, Transformation, 
+    et Chargement) pour remplir les tables de la couche 'silver' à partir de la 
+    couche 'bronze' dans une architecture Data Lake.
+
+    Elle assure le nettoyage des données, la normalisation et la cohérence entre 
+    les systèmes sources CRM et ERP avant leur utilisation dans la couche analytique 
+    'gold'.
+
+Actions effectuées :
+    1. Supprime les données existantes dans toutes les tables Silver.
+    2. Charge et transforme les données à partir des tables Bronze correspondantes.
+    3. Applique des règles de qualité des données telles que :
+        - Standardisation des valeurs de genre et de statut marital.
+        - Validation et formatage des champs date.
+        - Recalcul ou correction des valeurs de ventes ou de prix invalides.
+        - Remplacement des valeurs catégorielles manquantes ou incohérentes.
+    4. Affiche la durée de chargement pour chaque table et la durée totale du processus.
+
+Gestion des erreurs :
+    Comprend un bloc TRY...CATCH pour capturer et afficher toute erreur SQL 
+    survenue lors de l'exécution.
+
+Paramètres :
+    Aucun — cette procédure ne nécessite pas de paramètres d'entrée
+    et ne retourne aucun jeu de résultats.
+
+Exemple d'utilisation :
+    EXEC silver.load_silver;
+
+Auteur :
+    [Votre Nom ou Nom de l'Équipe]
+
+Créé le :
+    [Insérer la Date]
+
+Dernière modification :
+    [Insérer la Date de la dernière mise à jour]
+
+===============================================================================
+*/
+
 CREATE OR ALTER PROCEDURE silver.load_silver
 AS
 BEGIN
@@ -11,19 +57,19 @@ BEGIN
 
     BEGIN TRY
         PRINT '================================';
-        PRINT 'Loading Silver Layer';
+        PRINT 'Chargement de la couche Silver';
         PRINT '================================';
 
         -- ---------------------------------------------
         PRINT '--------------------------------';
-        PRINT 'Loading CRM Tables';
+        PRINT 'Chargement des tables CRM';
         PRINT '--------------------------------';
 
         SET @start_time = GETDATE();
-        PRINT 'Truncating Table: silver.crm_cust_info';
+        PRINT 'Vidage de la table : silver.crm_cust_info';
         TRUNCATE TABLE silver.crm_cust_info;
 
-        PRINT 'Inserting data into: silver.crm_cust_info';
+        PRINT 'Insertion des données dans : silver.crm_cust_info';
         INSERT INTO silver.crm_cust_info(
             cst_id,
             cst_key,
@@ -50,21 +96,21 @@ BEGIN
             END,
             cst_create_date
         FROM (
-            SELECT *,
+            SELECT * ,
                    ROW_NUMBER() OVER(PARTITION BY cst_id ORDER BY cst_create_date DESC) AS flag_last
             FROM bronze.crm_cust_info
         ) t
         WHERE flag_last = 1;
 
         SET @end_time = GETDATE();
-        PRINT 'Load Duration: ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + ' Seconds';
+        PRINT 'Durée de chargement : ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + ' secondes';
         PRINT '--------------------------'
 
         -- ---------------------------------------------
-        PRINT 'Truncating Table: silver.crm_prd_info';
+        PRINT 'Vidage de la table : silver.crm_prd_info';
         TRUNCATE TABLE silver.crm_prd_info;
 
-        PRINT 'Inserting data into: silver.crm_prd_info';
+        PRINT 'Insertion des données dans : silver.crm_prd_info';
         SET @start_time = GETDATE();
         INSERT INTO silver.crm_prd_info(
             prd_id,
@@ -94,14 +140,14 @@ BEGIN
         FROM bronze.crm_prd_info;
 
         SET @end_time = GETDATE();
-        PRINT 'Load Duration: ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + ' Seconds';
+        PRINT 'Durée de chargement : ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + ' secondes';
         PRINT '--------------------------'
 
         -- ---------------------------------------------
-        PRINT 'Truncating Table: silver.crm_sales_details';
+        PRINT 'Vidage de la table : silver.crm_sales_details';
         TRUNCATE TABLE silver.crm_sales_details;
 
-        PRINT 'Inserting data into: silver.crm_sales_details';
+        PRINT 'Insertion des données dans : silver.crm_sales_details';
         SET @start_time = GETDATE();
         INSERT INTO silver.crm_sales_details(
             sls_ord_num,
@@ -139,18 +185,18 @@ BEGIN
         FROM bronze.crm_sales_details;
 
         SET @end_time = GETDATE();
-        PRINT 'Load Duration: ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + ' Seconds';
+        PRINT 'Durée de chargement : ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + ' secondes';
         PRINT '--------------------------'
 
         -- ---------------------------------------------
-        PRINT 'Loading ERP Tables';
+        PRINT 'Chargement des tables ERP';
         PRINT '--------------------------';
 
         SET @start_time = GETDATE();
-        PRINT 'Truncating Table: silver.erp_cust_az12';
+        PRINT 'Vidage de la table : silver.erp_cust_az12';
         TRUNCATE TABLE silver.erp_cust_az12;
 
-        PRINT 'Inserting data into: silver.erp_cust_az12';
+        PRINT 'Insertion des données dans : silver.erp_cust_az12';
         INSERT INTO silver.erp_cust_az12(
             cid,
             bdate,
@@ -169,11 +215,11 @@ BEGIN
         FROM bronze.erp_cust_az12;
 
         SET @end_time = GETDATE();
-        PRINT 'Load Duration: ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + ' Seconds';
+        PRINT 'Durée de chargement : ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + ' secondes';
         PRINT '--------------------------'
 
         -- ---------------------------------------------
-        PRINT 'Inserting data into: silver.erp_loc_a101';
+        PRINT 'Insertion des données dans : silver.erp_loc_a101';
         SET @start_time = GETDATE();
         INSERT INTO silver.erp_loc_a101(
             cid,
@@ -190,14 +236,14 @@ BEGIN
         FROM bronze.erp_loc_a101;
 
         SET @end_time = GETDATE();
-        PRINT 'Load Duration: ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + ' Seconds';
+        PRINT 'Durée de chargement : ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + ' secondes';
         PRINT '--------------------------'
 
         -- ---------------------------------------------
-        PRINT 'Truncating Table: silver.erp_px_cat_g1v2';
+        PRINT 'Vidage de la table : silver.erp_px_cat_g1v2';
         TRUNCATE TABLE silver.erp_px_cat_g1v2;
 
-        PRINT 'Inserting data into: silver.erp_px_cat_g1v2';
+        PRINT 'Insertion des données dans : silver.erp_px_cat_g1v2';
         SET @start_time = GETDATE();
         INSERT INTO silver.erp_px_cat_g1v2(
             id,
@@ -217,25 +263,25 @@ BEGIN
         FROM bronze.erp_px_cat_g1v2;
 
         SET @end_time = GETDATE();
-        PRINT 'Load Duration: ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + ' Seconds';
+        PRINT 'Durée de chargement : ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + ' secondes';
         PRINT '--------------------------'
 
         SET @batch_end_time = GETDATE();
         PRINT '======================';
-        PRINT 'Loading Silver Layer Completed';
-        PRINT 'Total Load Duration: ' + CAST(DATEDIFF(second, @batch_start_time, @batch_end_time) AS NVARCHAR) + ' Seconds';
+        PRINT 'Chargement de la couche Silver terminé';
+        PRINT 'Durée totale de chargement : ' + CAST(DATEDIFF(second, @batch_start_time, @batch_end_time) AS NVARCHAR) + ' secondes';
 
     END TRY
     BEGIN CATCH
         PRINT '================================';
-        PRINT 'ERROR OCCURRED DURING LOADING SILVER LAYER';
-        PRINT 'Error Message: ' + ERROR_MESSAGE();
-        PRINT 'Error Number: ' + CAST(ERROR_NUMBER() AS NVARCHAR);
-        PRINT 'Error State: ' + CAST(ERROR_STATE() AS NVARCHAR);
+        PRINT 'ERREUR SURVENUE PENDANT LE CHARGEMENT DE LA COUCHE SILVER';
+        PRINT 'Message d''erreur : ' + ERROR_MESSAGE();
+        PRINT 'Numéro d''erreur : ' + CAST(ERROR_NUMBER() AS NVARCHAR);
+        PRINT 'État de l''erreur : ' + CAST(ERROR_STATE() AS NVARCHAR);
         PRINT '================================';
     END CATCH
 END;
 GO
 
--- Execution
+-- Exécution
 EXEC silver.load_silver;

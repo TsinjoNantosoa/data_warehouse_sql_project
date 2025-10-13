@@ -1,11 +1,12 @@
 /*
 ===============================================================================
-DDL Script: Create Silver Tables
+Script DDL : Création des tables Silver
 ===============================================================================
-Script Purpose:
-    This script creates tables in the 'silver' schema, dropping existing tables 
-    if they already exist.
-	  Run this script to re-define the DDL structure of 'bronze' Tables
+Objectif du script :
+    Ce script crée les tables dans le schéma 'silver', en supprimant les tables 
+    existantes si elles existent déjà.
+    Exécutez ce script pour redéfinir la structure DDL des tables provenant de 
+    la couche 'bronze'.
 ===============================================================================
 */
 
@@ -95,4 +96,3 @@ CREATE TABLE silver.erp_px_cat_g1v2 (
     dwh_create_date DATETIME2 DEFAULT GETDATE()
 );
 GO
-
