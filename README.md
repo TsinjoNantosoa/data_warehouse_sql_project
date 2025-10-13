@@ -92,6 +92,11 @@ Le projet inclut les étapes suivantes :
 └── requirements.txt # Dépendances
 ```
 
-## 🛡️ Licence
+## 🌐 Réseaux & Portfolio
 
-Ce projet est sous licence MIT. Vous êtes libre d'utiliser, modifier et partager ce projet en citant l'auteur.
+Vous pouvez me retrouver et consulter mes projets sur les plateformes suivantes :
+
+[![DataCamp](https://img.shields.io/badge/DataCamp-02B875?style=for-the-badge&logo=datacamp&logoColor=white)](https://www.datacamp.com/portfolio/sandaniainatsinjonantosoa)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/sandaniaina-tsinjo-nantosoa-b6209a330/)
+[![Portfolio](https://img.shields.io/badge/Portfolio-000000?style=for-the-badge&logo=google-chrome&logoColor=white)](https://tsinjonanto.netlify.app/)
+[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/TsinjoNantosoa)
