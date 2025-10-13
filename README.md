@@ -2,7 +2,7 @@
 
 Bienvenue dans le projet **Data Warehouse et Analytics** ! 🚀
 
-Ce projet illustre une solution complète de data warehousing et d'analytique, depuis la conception du Data Warehouse jusqu'à la génération d'insights exploitables. Il a été conçu comme un projet portfolio pour démontrer les bonnes pratiques de l'industrie en data engineering et data analytics.
+Ce projet illustre une solution complète de data warehousing et d'analytique, depuis la conception du Data Warehouse jusqu'à la génération d'insights exploitables.
 
 ## 🏗️ Architecture des données
 
